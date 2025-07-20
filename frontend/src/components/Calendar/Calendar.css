@@ -1,0 +1,92 @@
+.calendar-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.custom-calendar {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.event-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.event-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.event-dot.priority-low {
+  background-color: #4caf50;
+}
+
+.event-dot.priority-medium {
+  background-color: #ff9800;
+}
+
+.event-dot.priority-high {
+  background-color: #f44336;
+}
+
+.selected-date-events {
+  margin-top: 2rem;
+}
+
+.selected-date-events h3 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.event-item {
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.event-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.event-item.priority-low {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
+}
+
+.event-item.priority-medium {
+  background-color: #fff3e0;
+  border-left: 4px solid #ff9800;
+}
+
+.event-item.priority-high {
+  background-color: #ffebee;
+  border-left: 4px solid #f44336;
+}
+
+.event-time {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.event-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.event-description {
+  font-size: 0.875rem;
+  color: #666;
+}

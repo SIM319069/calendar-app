@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: calendar-postgres
+    environment:
+      POSTGRES_USER: calendar_user
+      POSTGRES_PASSWORD: calendar_password
+      POSTGRES_DB: calendar_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - calendar-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: calendar-backend
+    environment:
+      PORT: 5000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: calendar_user
+      DB_PASSWORD: calendar_password
+      DB_NAME: calendar_db
+      NODE_ENV: development
+    ports:
+      - "5001:5000"  # Changed from 5000:5000 to 5001:5000
+    depends_on:
+      - postgres
+    networks:
+      - calendar-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: calendar-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - calendar-network
+    environment:
+      - REACT_APP_API_URL=http://localhost:5001/api  # Updated to use port 5001
+
+volumes:
+  postgres_data:
+
+networks:
+  calendar-network:
+    driver: bridge
