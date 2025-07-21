@@ -15,3 +15,17 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
+
+export interface IEventFilters {
+  searchText: string;
+  priorities: {
+    low: boolean;
+    medium: boolean;
+    high: boolean;
+  };
+  dateRange: {
+    start: Date | null;
+    end: Date | null;
+  };
+  showPastEvents: boolean;
+}

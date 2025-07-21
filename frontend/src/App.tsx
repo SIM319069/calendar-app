@@ -2,21 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { CalendarComponent } from './components/Calendar';
 import { EventForm } from './components/EventForm';
 import { EventList } from './components/EventList';
-import { IEvent } from './types';
+import { FilterPanel } from './components/FilterPanel';
+import { IEvent, IEventFilters } from './types';
 import { eventApi } from './services/api';
+import { parseISO, isAfter, isBefore, isEqual, startOfDay } from 'date-fns';
 import './App.css';
 
 function App() {
   const [events, setEvents] = useState<IEvent[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<IEvent[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filtersPanelExpanded, setFiltersPanelExpanded] = useState(false);
+  
+  const [filters, setFilters] = useState<IEventFilters>({
+    searchText: '',
+    priorities: {
+      low: true,
+      medium: true,
+      high: true,
+    },
+    dateRange: {
+      start: null,
+      end: null,
+    },
+    showPastEvents: false,
+  });
 
   useEffect(() => {
     loadEvents();
   }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [events, filters]);
 
   const loadEvents = async () => {
     try {
@@ -30,6 +52,61 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...events];
+    const today = startOfDay(new Date());
+
+    // Filter by search text
+    if (filters.searchText) {
+      const searchLower = filters.searchText.toLowerCase();
+      filtered = filtered.filter(
+        event =>
+          event.title.toLowerCase().includes(searchLower) ||
+          (event.description && event.description.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // Filter by priority
+    filtered = filtered.filter(event => filters.priorities[event.priority]);
+
+    // Filter by date range
+    if (filters.dateRange.start || filters.dateRange.end) {
+      filtered = filtered.filter(event => {
+        const eventDate = typeof event.date === 'string' 
+          ? startOfDay(parseISO(event.date)) 
+          : startOfDay(event.date);
+
+        if (filters.dateRange.start && filters.dateRange.end) {
+          return (
+            (isAfter(eventDate, startOfDay(filters.dateRange.start)) || 
+             isEqual(eventDate, startOfDay(filters.dateRange.start))) &&
+            (isBefore(eventDate, startOfDay(filters.dateRange.end)) || 
+             isEqual(eventDate, startOfDay(filters.dateRange.end)))
+          );
+        } else if (filters.dateRange.start) {
+          return isAfter(eventDate, startOfDay(filters.dateRange.start)) || 
+                 isEqual(eventDate, startOfDay(filters.dateRange.start));
+        } else if (filters.dateRange.end) {
+          return isBefore(eventDate, startOfDay(filters.dateRange.end)) || 
+                 isEqual(eventDate, startOfDay(filters.dateRange.end));
+        }
+        return true;
+      });
+    }
+
+    // Filter past events
+    if (!filters.showPastEvents) {
+      filtered = filtered.filter(event => {
+        const eventDate = typeof event.date === 'string' 
+          ? startOfDay(parseISO(event.date)) 
+          : startOfDay(event.date);
+        return isAfter(eventDate, today) || isEqual(eventDate, today);
+      });
+    }
+
+    setFilteredEvents(filtered);
   };
 
   const handleCreateEvent = async (eventData: Omit<IEvent, 'id'>) => {
@@ -100,6 +177,22 @@ function App() {
     setSelectedDate(null);
   };
 
+  const handleClearFilters = () => {
+    setFilters({
+      searchText: '',
+      priorities: {
+        low: true,
+        medium: true,
+        high: true,
+      },
+      dateRange: {
+        start: null,
+        end: null,
+      },
+      showPastEvents: false,
+    });
+  };
+
   if (loading) {
     return <div className="loading">Loading events...</div>;
   }
@@ -116,13 +209,27 @@ function App() {
       {error && <div className="error-message">{error}</div>}
 
       <main className="app-main">
+        <FilterPanel
+          filters={filters}
+          onFiltersChange={setFilters}
+          onClearFilters={handleClearFilters}
+          isExpanded={filtersPanelExpanded}
+          onToggleExpand={() => setFiltersPanelExpanded(!filtersPanelExpanded)}
+        />
+        
+        <div className="events-summary">
+          Showing {filteredEvents.length} of {events.length} events
+          {filters.searchText && ` matching "${filters.searchText}"`}
+        </div>
+
         <CalendarComponent
-          events={events}
+          events={filteredEvents}
           onDateSelect={handleDateSelect}
           onEventSelect={handleEventSelect}
         />
+        
         <EventList
-          events={events}
+          events={filteredEvents}
           onEdit={handleEditEvent}
           onDelete={handleDeleteEvent}
         />

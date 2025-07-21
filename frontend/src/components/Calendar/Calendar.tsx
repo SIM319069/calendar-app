@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import Calendar from 'react-calendar';
+import React, { useState, useRef } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
 import { format, parseISO } from 'date-fns';
 import { IEvent } from '../../types';
-import 'react-calendar/dist/Calendar.css';
 import './Calendar.css';
 
 interface CalendarComponentProps {
@@ -16,70 +19,147 @@ export const CalendarComponent: React.FC<CalendarComponentProps> = ({
   onDateSelect,
   onEventSelect,
 }) => {
-  const [value, setValue] = useState<Date>(new Date());
+  const calendarRef = useRef<FullCalendar>(null);
+  const [currentView, setCurrentView] = useState('dayGridMonth');
 
-  const tileContent = ({ date }: { date: Date }) => {
-    const dayEvents = events.filter((event) => {
-      const eventDate = typeof event.date === 'string' ? parseISO(event.date) : event.date;
-      return format(eventDate, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd');
-    });
+  // Convert our events to FullCalendar format
+  const calendarEvents = events.map(event => {
+    const eventDate = typeof event.date === 'string' ? event.date : format(event.date, 'yyyy-MM-dd');
+    
+    return {
+      id: event.id?.toString(),
+      title: event.title,
+      start: `${eventDate}T${event.startTime}`,
+      end: `${eventDate}T${event.endTime}`,
+      backgroundColor: getEventColor(event.priority),
+      borderColor: getEventColor(event.priority),
+      extendedProps: {
+        description: event.description,
+        priority: event.priority,
+        originalEvent: event
+      }
+    };
+  });
 
-    if (dayEvents.length > 0) {
-      return (
-        <div className="event-indicators">
-          {dayEvents.map((event) => (
-            <div
-              key={event.id}
-              className={`event-dot priority-${event.priority}`}
-              title={event.title}
-            />
-          ))}
-        </div>
-      );
+  function getEventColor(priority: string): string {
+    switch (priority) {
+      case 'high':
+        return '#f44336';
+      case 'medium':
+        return '#ff9800';
+      case 'low':
+        return '#4caf50';
+      default:
+        return '#2196f3';
     }
-    return null;
+  }
+
+  const handleDateClick = (arg: any) => {
+    onDateSelect(arg.date);
   };
 
-  const handleDateChange = (value: Date | [Date, Date] | null) => {
-    if (value instanceof Date) {
-      setValue(value);
-      onDateSelect(value);
-    } else if (Array.isArray(value) && value[0] instanceof Date) {
-      setValue(value[0]);
-      onDateSelect(value[0]);
-    }
+  const handleEventClick = (clickInfo: any) => {
+    const originalEvent = clickInfo.event.extendedProps.originalEvent;
+    onEventSelect(originalEvent);
+  };
+
+  const renderEventContent = (eventContent: any) => {
+    return (
+      <div className="fc-event-content">
+        <div className="fc-event-time">{eventContent.timeText}</div>
+        <div className="fc-event-title">{eventContent.event.title}</div>
+      </div>
+    );
   };
 
   return (
     <div className="calendar-container">
-      <Calendar
-        onChange={handleDateChange}
-        value={value}
-        tileContent={tileContent}
-        className="custom-calendar"
+      <div className="calendar-header">
+        <div className="view-buttons">
+          <button 
+            className={currentView === 'dayGridMonth' ? 'active' : ''}
+            onClick={() => {
+              setCurrentView('dayGridMonth');
+              calendarRef.current?.getApi().changeView('dayGridMonth');
+            }}
+          >
+            Month
+          </button>
+          <button 
+            className={currentView === 'timeGridWeek' ? 'active' : ''}
+            onClick={() => {
+              setCurrentView('timeGridWeek');
+              calendarRef.current?.getApi().changeView('timeGridWeek');
+            }}
+          >
+            Week
+          </button>
+          <button 
+            className={currentView === 'timeGridDay' ? 'active' : ''}
+            onClick={() => {
+              setCurrentView('timeGridDay');
+              calendarRef.current?.getApi().changeView('timeGridDay');
+            }}
+          >
+            Day
+          </button>
+          <button 
+            className={currentView === 'listWeek' ? 'active' : ''}
+            onClick={() => {
+              setCurrentView('listWeek');
+              calendarRef.current?.getApi().changeView('listWeek');
+            }}
+          >
+            List
+          </button>
+        </div>
+      </div>
+      
+      <FullCalendar
+        ref={calendarRef}
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+        initialView="dayGridMonth"
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: ''
+        }}
+        events={calendarEvents}
+        dateClick={handleDateClick}
+        eventClick={handleEventClick}
+        eventContent={renderEventContent}
+        height="auto"
+        slotMinTime="06:00:00"
+        slotMaxTime="22:00:00"
+        eventDisplay="block"
+        dayMaxEvents={3}
+        moreLinkClick="popover"
+        weekends={true}
+        nowIndicator={true}
+        editable={false}
+        selectable={true}
+        selectMirror={true}
+        eventClassNames={(arg) => {
+          return [`priority-${arg.event.extendedProps.priority}`];
+        }}
       />
-      <div className="selected-date-events">
-        <h3>Events on {format(value, 'MMMM d, yyyy')}</h3>
-        {events
-          .filter((event) => {
-            const eventDate = typeof event.date === 'string' ? parseISO(event.date) : event.date;
-            return format(eventDate, 'yyyy-MM-dd') === format(value, 'yyyy-MM-dd');
-          })
-          .map((event) => (
-            <div
-              key={event.id}
-              className={`event-item priority-${event.priority}`}
-              onClick={() => onEventSelect(event)}
-            >
-              <div className="event-time">
-                {event.startTime} - {event.endTime}
-              </div>
-              <div className="event-title">{event.title}</div>
-              {event.description && (
-                <div className="event-description">{event.description}</div>
-              )}
-            </div>
-          ))}
+      
+      <div className="calendar-legend">
+        <h4>Priority Levels</h4>
+        <div className="legend-items">
+          <div className="legend-item">
+            <span className="legend-color high"></span>
+            <span>High Priority</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-color medium"></span>
+            <span>Medium Priority</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-color low"></span>
+            <span>Low Priority</span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,92 +1,278 @@
 .calendar-container {
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 1rem;
 }
 
-.custom-calendar {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto 2rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.event-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 2px;
-  margin-top: 2px;
-}
-
-.event-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.event-dot.priority-low {
-  background-color: #4caf50;
-}
-
-.event-dot.priority-medium {
-  background-color: #ff9800;
-}
-
-.event-dot.priority-high {
-  background-color: #f44336;
-}
-
-.selected-date-events {
-  margin-top: 2rem;
-}
-
-.selected-date-events h3 {
+.calendar-header {
   margin-bottom: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.view-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-buttons button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.view-buttons button:hover {
+  background-color: #f5f5f5;
+}
+
+.view-buttons button.active {
+  background-color: #2196f3;
+  color: white;
+  border-color: #2196f3;
+}
+
+/* FullCalendar Custom Styles */
+.fc {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.fc-toolbar {
+  margin-bottom: 1.5rem !important;
+}
+
+.fc-toolbar-title {
+  font-size: 1.5rem !important;
+  font-weight: 600;
   color: #333;
 }
 
-.event-item {
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+.fc-button-primary {
+  background-color: #2196f3 !important;
+  border-color: #2196f3 !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.2s;
 }
 
-.event-item:hover {
-  transform: translateY(-2px);
+.fc-button-primary:hover {
+  background-color: #1976d2 !important;
+  border-color: #1976d2 !important;
+}
+
+.fc-button-primary:disabled {
+  background-color: #ccc !important;
+  border-color: #ccc !important;
+}
+
+.fc-button-primary:not(:disabled):active,
+.fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #1565c0 !important;
+  border-color: #1565c0 !important;
+}
+
+/* Calendar Grid */
+.fc-daygrid-day {
+  transition: background-color 0.2s;
+}
+
+.fc-daygrid-day:hover {
+  background-color: #f5f5f5;
+  cursor: pointer;
+}
+
+.fc-day-today {
+  background-color: #e3f2fd !important;
+}
+
+/* Events */
+.fc-event {
+  border: none !important;
+  padding: 2px 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.fc-event:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.fc-event-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-event-time {
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.fc-event-title {
+  font-weight: 500;
+}
+
+/* Priority Colors */
+.fc-event.priority-high {
+  background-color: #f44336 !important;
+  border-color: #f44336 !important;
+}
+
+.fc-event.priority-medium {
+  background-color: #ff9800 !important;
+  border-color: #ff9800 !important;
+}
+
+.fc-event.priority-low {
+  background-color: #4caf50 !important;
+  border-color: #4caf50 !important;
+}
+
+/* Time Grid View */
+.fc-timegrid-slot {
+  height: 3rem !important;
+}
+
+.fc-timegrid-event {
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.fc-timegrid-event .fc-event-content {
+  white-space: normal;
+}
+
+/* List View */
+.fc-list-event:hover td {
+  background-color: #f5f5f5;
+}
+
+.fc-list-event-title {
+  font-weight: 500;
+}
+
+.fc-list-event-time {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+/* Popover for "more" events */
+.fc-popover {
+  border: 1px solid #e0e0e0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.event-item.priority-low {
-  background-color: #e8f5e9;
-  border-left: 4px solid #4caf50;
-}
-
-.event-item.priority-medium {
-  background-color: #fff3e0;
-  border-left: 4px solid #ff9800;
-}
-
-.event-item.priority-high {
-  background-color: #ffebee;
-  border-left: 4px solid #f44336;
-}
-
-.event-time {
-  font-size: 0.875rem;
-  color: #666;
-  margin-bottom: 0.25rem;
-}
-
-.event-title {
+.fc-popover-header {
+  background-color: #f5f5f5;
+  padding: 0.5rem;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 0.25rem;
 }
 
-.event-description {
-  font-size: 0.875rem;
-  color: #666;
+/* Legend */
+.calendar-legend {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.calendar-legend h4 {
+  margin: 0 0 0.75rem 0;
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.legend-items {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.legend-color.high {
+  background-color: #f44336;
+}
+
+.legend-color.medium {
+  background-color: #ff9800;
+}
+
+.legend-color.low {
+  background-color: #4caf50;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendar-header {
+    justify-content: center;
+  }
+  
+  .view-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .fc-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .fc-toolbar-title {
+    font-size: 1.25rem !important;
+  }
+  
+  .legend-items {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Custom scrollbar for calendar */
+.fc-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc #f5f5f5;
+}
+
+.fc-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
 }

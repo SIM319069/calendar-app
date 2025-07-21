@@ -27,6 +27,8 @@ export const createEvent = async (req: Request, res: Response): Promise<void> =>
 
 export const getEvents = async (req: Request, res: Response): Promise<void> => {
   try {
+    // For now, we'll fetch all events and let the frontend handle filtering
+    // This can be optimized later with query parameters
     const events = await eventRepository().find({
       order: {
         date: 'ASC',
