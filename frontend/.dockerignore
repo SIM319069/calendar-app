@@ -3,3 +3,10 @@ build
 .env.local
 .env.*.local
 npm-debug.log
+cypress
+cypress.config.ts
+cypress.json
+cypress/videos
+cypress/screenshots
+.nyc_output
+coverage

@@ -1,0 +1,52 @@
+{
+  "validEvent": {
+    "title": "Team Meeting",
+    "description": "Weekly team sync meeting",
+    "date": "2025-08-15",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "priority": "medium"
+  },
+  "highPriorityEvent": {
+    "title": "Product Launch",
+    "description": "New product launch event",
+    "date": "2025-08-20",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "priority": "high"
+  },
+  "lowPriorityEvent": {
+    "title": "Coffee Break",
+    "description": "Casual coffee break",
+    "date": "2025-08-10",
+    "startTime": "15:30",
+    "endTime": "16:00",
+    "priority": "low"
+  },
+  "multipleEvents": [
+    {
+      "title": "Morning Standup",
+      "description": "Daily standup meeting",
+      "date": "2025-08-15",
+      "startTime": "09:00",
+      "endTime": "09:30",
+      "priority": "high"
+    },
+    {
+      "title": "Lunch Meeting",
+      "description": "Business lunch",
+      "date": "2025-08-15",
+      "startTime": "12:00",
+      "endTime": "13:30",
+      "priority": "medium"
+    },
+    {
+      "title": "Code Review",
+      "description": "Weekly code review session",
+      "date": "2025-08-16",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "priority": "low"
+    }
+  ]
+}
