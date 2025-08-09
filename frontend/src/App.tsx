@@ -200,7 +200,7 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>Calendar Application</h1>
+        <h1>Calendar Application event</h1>
         <button className="btn-primary" onClick={() => setShowForm(true)}>
           Add New Event
         </button>
